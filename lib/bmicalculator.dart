@@ -11,7 +11,40 @@ class _BmiCalculatorState extends State<BmiCalculator> {
   TextEditingController heightcontroller = TextEditingController();
   TextEditingController weightcontroller = TextEditingController();
   bool isCalculator = false;
-  String bmiResult = "";
+  double bmi = 0.00;
+  String bmiReport = "";
+
+  void generateReport() {
+    String message = "Your BMI is:${bmi.ceil()} You are";
+    if (bmi < 18) {
+      setState(() {
+        bmiReport = "$message Under Weight";
+      });
+    } else if (bmi < 25) {
+      setState(() {
+        bmiReport = "$message Normal";
+      });
+    } else if (bmi < 30) {
+      setState(() {
+        bmiReport = "$message Over Weight";
+      });
+    } else if (bmi < 35) {
+      setState(() {
+        bmiReport = "$message Obesity(Class I)";
+      });
+    } else if (bmi < 40) {
+      setState(() {
+        bmiReport = "$message Obesity(Class II)";
+      });
+    } else {
+      setState(() {
+        setState(() {
+          bmiReport = "$message Extreme Obesity";
+        });
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double deviceHeight = MediaQuery.of(context).size.height;
@@ -58,14 +91,33 @@ class _BmiCalculatorState extends State<BmiCalculator> {
             ),
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                    double height = double.parse(heightcontroller.text);
+                    double weight = double.parse(weightcontroller.text);
+                    setState(() {
+                      bmi = weight / (height * height);
+                    });
+                    generateReport();
+                    setState(() {
+                      isCalculator = true;
+                    });
+                    generateReport();
+                    print(bmi);
+                    print(bmiReport);
+                  },
                   icon: Icon(Icons.send),
                   label: Text("Calculator")),
               ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                    heightcontroller.clear();
+                    weightcontroller.clear();
+                    setState(() {
+                      isCalculator = false;
+                    });
+                  },
                   icon: Icon(Icons.send),
                   label: Text("Reset")),
             ],
@@ -74,9 +126,9 @@ class _BmiCalculatorState extends State<BmiCalculator> {
             alignment: Alignment.center,
             width: devicewidth,
             height: deviceHeight * 0.08,
-            color: Colors.pink,
+            color: Colors.blue,
             child: Text(
-              "Result Button".toUpperCase(),
+              isCalculator ? bmiReport : "Result Button".toUpperCase(),
               style: TextStyle(color: Colors.white),
             ),
           ),
